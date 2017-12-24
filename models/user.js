@@ -102,7 +102,7 @@ const passwordValidators = [
 const UserSchema = new Schema({
     email: { type: String, required: true, unique: true, validate: emailValidators },
     username: { type: String, required: true, unique: true, validate: usernameValidators },
-    password: { type: String, required: true ,validate : passwordValidators},
+    password: { type: String, required: true, validate: passwordValidators },
 });
 
 UserSchema.pre('save', function (next) {
@@ -116,7 +116,7 @@ UserSchema.pre('save', function (next) {
     });
 });
 
-UserSchema.method.comparePassword = (password) => {
+UserSchema.methods.comparePassword = function (password) {
     return bcrypt.compareSync(password, this.password);
 };
 module.exports = mongoose.model('User', UserSchema);
