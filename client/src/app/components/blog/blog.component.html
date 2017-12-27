@@ -1,0 +1,117 @@
+<h1 class="page-header">Blog Feed</h1>
+
+<div class="row show-hide message" *ngIf="message && newPost">
+  <div class="col-sm-12" [ngClass]="messageClass">
+    {{message}}
+  </div>
+</div>
+
+<button type="button" name="button" class="btn btn-warning" *ngIf="!newPost" (click)="newBlogForm()">New Post</button>
+<button type="button" name="button" [disabled]="loadingBlogs" class="btn btn-success" *ngIf="!newPost" (click)="reloadBlogs()">
+  <span class="glyphicon glyphicon-repeat"></span>Reload</button>
+
+<br>
+<br>
+
+<!-- Create New Blog Form -->
+<form [formGroup]="form" name="blogFrom" *ngIf="newPost" (submit)="onBlogSubmit()">
+  <!-- title -->
+  <div class="form-group">
+    <label for="title">Title</label>
+    <div [ngClass]="{'has-success' : form.controls.title.valid, 'has-error' : form.controls.title.dirty && form.controls.title.errors}">
+      <input type="text" name="title" class="form-control" placeholder="Blog Title*" autocomplete="off" formControlName="title">
+      <ul class="help-block">
+        <li *ngIf="form.controls.title.dirty && form.controls.title.errors?.required">This field is required</li>
+        <li *ngIf="(form.controls.title.dirty && form.controls.title.errors?.maxlength) || (form.controls.title.dirty && form.controls.title.errors?.minlength)">Min length : 5 and Max length : 50</li>
+        <li *ngIf="form.controls.title.dirty && form.controls.title.errors?.alphaNumericValidation">Title Must be alpha Numeric</li>
+      </ul>
+    </div>
+  </div>
+  <!-- title -->
+  <!-- body -->
+  <div class="form-group">
+    <label for="title">Body</label>
+    <div [ngClass]="{'has-success' : form.controls.body.valid, 'has-error' : form.controls.body.dirty && form.controls.body.errors}">
+      <textarea name="" id="body" name="body" placeholder="Body*" class="form-control" formControlName="body" cols="80" rows="8"></textarea>
+      <ul class="help-block">
+        <li *ngIf="form.controls.body.dirty && form.controls.body.errors?.required">This field is required</li>
+        <li *ngIf="(form.controls.body.dirty && form.controls.body.errors?.maxlength) || (form.controls.body.dirty && form.controls.body.errors?.minlength)">Min length : 5 and Max length : 500</li>
+      </ul>
+    </div>
+  </div>
+  <!-- body -->
+  <button type="button" [disabled]="processing" name="button" class="btn btn-warning" (click) ="goBack()">Go Back</button>
+  <button type="submit" [disabled]="processing || !form.valid" name="submit" class="btn btn-success">Submit</button>  
+</form>
+<!-- Create New Blog Form -->
+
+<div *ngIf="!newPost">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">Post Title</h3>
+    </div>
+    <div class="panel-body">
+      Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy
+      text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+      It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+      It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently
+      with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+    </div>
+    <!-- start footer -->
+    <div class="panel-footer">
+      <strong>Posted By : </strong>Ashutosh Kumar Mantoo
+      <br>
+      <strong>Date : </strong>Dec 25, 2017
+      <br>
+      <div>
+        <strong>Likes: </strong>25
+        <br>
+        <strong>Disikes: </strong>23
+      </div>
+      <a href="">
+        <button type="button" name="button" class="btn btn-sm btn-info">Edit</button>
+      </a>
+      <a href="">
+        <button type="button" name="button" class="btn btn-sm btn-danger">Delete</button>
+      </a>
+      <!-- likes dorpdown -->
+      <div class="dropdown">
+        <button type="button" name="button" class="btn btn-sm btn-success">
+          <span class="glyphicon glyphicon-thumbs-up">&nbsp;</span>Likes : 23
+        </button>
+        <div class="dropdown-content">
+          <a href="">Ashish</a>
+          <a href="">Rohit</a>
+          <a href="">Vikash</a>
+          <a href="">Harish</a>
+        </div>
+      </div>
+      <!-- likes dorpdown end -->
+      <!-- Dislike dropdown  -->
+      <div class="dropdown">
+        <button type="button" name="button" class="btn btn-sm btn-warning">
+          <span class="glyphicon glyphicon-thumbs-down">&nbsp;</span>Dislikes : 12
+        </button>
+        <div class="dropdown-content">
+          <a href="">Ashish</a>
+          <a href="">Rohit</a>
+          <a href="">Vikash</a>
+          <a href="">Harish</a>
+        </div>
+      </div>
+      <!-- dislike dropdown end -->
+    </div>
+    <!-- end footer -->
+    <ul class="list-group">
+      <li class="list-group-item">
+        <button type="button" name="button" class="btn btn-sm btn-danger" (click)="draftComment()">Post Comment</button>
+        <br>
+        <!-- <form>
+          <textarea name="comment" cols="30" rows="10" class="form-control"></textarea>
+          <button type="button" name="submit" class="btn btn-sm btn-info">Submit</button>
+          <button type="button" name="cancel" class="btn btn-sm btn-danger">cancel</button>          
+        </form> -->
+      </li>
+    </ul>
+  </div>
+</div>

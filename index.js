@@ -8,6 +8,7 @@ const cors = require('cors');
 
 const config = require('./config/database');
 const authentication = require('./routes/authentication')(router);
+const blogs = require('./routes/blog')(router);
 
 mongoose.Promise = global.Promise;
 mongoose.connect(config.uri, (err) => {
@@ -27,6 +28,7 @@ app.use(bodyParser.json());
 
 app.use(express.static(__dirname + '/client/dist/'));
 app.use('/authentication', authentication);
+app.use('/blogs',blogs);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/client/dist/index.html'));
