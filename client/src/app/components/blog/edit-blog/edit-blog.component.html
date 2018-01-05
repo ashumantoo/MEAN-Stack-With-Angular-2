@@ -1,0 +1,24 @@
+<h1 class="page-header">Edit Blog Post</h1>
+
+<div class="row show-hide message" *ngIf="message">
+  <div class="col-sm-12" [ngClass]="messageClass">
+    {{message}}
+  </div>
+</div>
+
+<form (submit)="updateBlogSubmit()" *ngIf="!loading">
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input type="text" name="title" [disabled]="processing" placeholder="Blog Title*" class="form-control" [(ngModel)]="blog.title"/>
+  </div>
+
+  <div class="form-group">
+    <label for="body">Body*</label>
+    <textarea name="body" id="" cols="80" rows="8" [disabled]="processing" class="form-control" placeholder="Blog Body*" [(ngModel)]="blog.body"></textarea>
+<br>
+    <a routerLink="['/delete-blog',blog._id]"><button type="button" [disabled]="processing" name="button" class="btn btn-danger">Delete</button></a>
+    <button type="button" [disabled]="processing" name="button" class="btn btn-success" (click)="goBack()">Go Back</button>
+    <button type="submit" [disabled]="processing" name="save" class="btn btn-info" (click)="goBack()">Save Changes</button>
+    
+  </div>
+</form>
