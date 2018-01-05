@@ -13,10 +13,14 @@ export class BlogComponent implements OnInit {
   message;
   messageClass;
   username;
+  blogPosts;
   processing = false;
   newPost = false;
   loadingBlogs = false;
   form;
+  newComment = [];
+  enabledComments = [];
+  commentForm;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -24,6 +28,7 @@ export class BlogComponent implements OnInit {
     private blogService: BlogService
   ) {
     this.createNewBlogForm();
+    this.createCommentForm();
   }
 
   newBlogForm() {
@@ -46,6 +51,24 @@ export class BlogComponent implements OnInit {
     });
   }
 
+  createCommentForm() {
+    this.commentForm = this.formBuilder.group({
+      comment: ['', Validators.compose([
+        Validators.required,
+        Validators.minLength(1),
+        Validators.maxLength(200)
+      ])]
+    })
+  }
+
+  enableCommentForm() {
+    this.commentForm.get('comment').enable();
+  }
+
+  disableCommentForm() {
+    this.commentForm.get('comment').disable();
+  }
+
   enableNewBlogForm() {
     this.form.get('title').enable();
     this.form.get('body').enable();
@@ -66,14 +89,24 @@ export class BlogComponent implements OnInit {
   }
   reloadBlogs() {
     this.loadingBlogs = true;
-    //get all Blogs
+    this.getAllBlogs();
     setTimeout(() => {
       this.loadingBlogs = false;
     }, 4000)
   }
 
-  draftComment() {
+  draftComment(id) {
+    this.commentForm.reset(); 
+    this.newComment = [];
+    this.newComment.push(id);
+  }
 
+  cancelSubmission(id) {
+    const index = this.newComment.indexOf(id);
+    this.newComment.splice(index, 1);
+    this.commentForm.reset();
+    this.enableCommentForm();
+    this.processing = false;
   }
 
   onBlogSubmit() {
@@ -85,22 +118,23 @@ export class BlogComponent implements OnInit {
       body: this.form.get('body').value,
       createdBy: this.username
     }
-    this.blogService.newBlog(blog).subscribe( data => {
+    this.blogService.newBlog(blog).subscribe(data => {
       if (!data.success) {
         this.messageClass = 'alert alert-danger';
         this.message = data.message;
         this.processing = false;
         this.enableNewBlogForm();
-      }else{
+      } else {
         this.messageClass = 'alert alert-success';
         this.message = data.message;
+        this.getAllBlogs();
         setTimeout(() => {
           this.newPost = false;
           this.processing = false;
           this.message = false;
           this.form.reset();
           this.enableNewBlogForm();
-        },2000);
+        }, 2000);
       }
     });
   }
@@ -108,11 +142,54 @@ export class BlogComponent implements OnInit {
   goBack() {
     window.location.reload();
   }
+
+  likeBlog(id) {
+    this.blogService.likeBlog(id).subscribe(data => {
+      this.getAllBlogs();
+    });
+  }
+
+  dislikeBlog(id) {
+    this.blogService.dislikeBlog(id).subscribe(data => {
+      this.getAllBlogs();
+    });
+  }
+  getAllBlogs() {
+    this.blogService.getAllBlogs().subscribe(data => {
+      this.blogPosts = data.blogs;
+    });
+  }
+
+  postComment(id) {
+    this.disableCommentForm();
+    this.processing = true;
+    const comment = this.commentForm.get('comment').value;
+    this.blogService.postComments(id, comment).subscribe(data => {
+      this.getAllBlogs();
+      const index = this.newComment.indexOf(id);
+      this.newComment.splice(index, 1);
+      this.enableCommentForm();
+      this.commentForm.reset();
+      this.processing = false;
+      if (this.enabledComments.indexOf(id) < 0)
+        this.expand(id);
+    });
+  }
+
+  expand(id) {
+    this.enabledComments.push(id);
+  }
+
+  collapse(id) {
+    const index = this.enabledComments.indexOf(id);
+    this.enabledComments.splice(index, 1);
+  }
+
   ngOnInit() {
     this.authService.getProfile().subscribe(profile => {
-      // console.log(profile);
       this.username = profile.user.username;
     })
+    this.getAllBlogs();
   }
 
 }
